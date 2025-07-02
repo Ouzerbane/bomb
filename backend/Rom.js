@@ -1,9 +1,9 @@
 export default class Rom {
    constructor() {
-    this.id = uuidv4();
+    this.id = 1;
     this.players = [];
     this.state = 'waiting'; 
-    this.map = this.createInitialMap();
-    this.waitingInterval = null;
+    // this.map = this.createInitialMap();
+    // this.waitingInterval = null;
   }
 }

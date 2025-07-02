@@ -5,10 +5,11 @@ let ws = null;
 export function Ws() {
   ws = new WebSocket("ws://localhost:8080");
   LoginInitial();
-  ws.on("message", (data) => {
-    const message = JSON.parse(data);
-    console.log(message);
-  })
+  ws.onmessage = (event) => {
+    let data = JSON.parse(event.data);
+    console.log(data);
+    
+  }
 
 }
 
@@ -20,12 +21,11 @@ function LoginInitial() {
   <input type="text" id="nickname" placeholder="Your name..." />
   <div class="error" id="error"></div>
   <button class="start-button">Start Game</button>
+
   </div>
   `;
   const startButton = document.querySelector(".start-button");
   startButton.addEventListener("click", handleStartButtonClick);
-  // const nicknameInput = document.getElementById("nickname");
-  // const errorDiv = document.getElementById("error");
 
 }
 function handleStartButtonClick(event) {

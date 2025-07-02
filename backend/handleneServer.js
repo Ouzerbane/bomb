@@ -1,10 +1,12 @@
 import {WebSocketServer} from 'ws';
+import Rom from './Rom.js';
 
 export default class Game {
   constructor(port=8080) {
     this.port = port;
     this.wss = new WebSocketServer({ port });
-
+    this.players = [];
+    this.Roms = new Rom();
     this.characters = ['char1', 'char2', 'char3', 'char4'];
     this.positions = [
       { x: 1, y: 1 },
@@ -19,24 +21,38 @@ export default class Game {
 
   handleConnection(ws) {
     ws.on('message', (message) => {
+      console.log(`Received message: ${message}`);
+      
       let data = JSON.parse(message);
       switch (data.type) {
         case 'login':
-          this.handeleloguin();
+          this.handeleloguin(ws , data);
       }
-      // if (data.type === 'login') {
-      //   const characterIndex = this.characters.indexOf(data.name);
-      //   if (characterIndex !== -1) {
-      //     const position = this.positions[characterIndex];
-      //     ws.send(JSON.stringify({ type: 'login', name: data.name, x: position.x, y: position.y }));
-      //   } else {
-      //     ws.send(JSON.stringify({ type: 'error', message: 'Invalid character name' }));
-      //   }
-      // }
-    })
-    console.log('New client connected');
-  }
-  handeleloguin(){
+    })  }
+  handeleloguin(ws , data) {
 
+    if (data.name.trim() === '') {
+      this.SendError(ws, 'Nickname cannot be empty');
+      return;
+    }
+    if (this.players.length >= 4) {
+      this.SendError(ws, 'Maximum players reached');
+      return;
+    }
+    if (this.players.some(player => player.nickname === data.nickname)) {
+      this.SendError(ws, 'Nickname already taken');
+      return;
+    }
+    if (this.Roms.state !== 'waiting') {
+      this.SendError(ws, 'Game is already in progress');
+      return;
+    }
+
+    this.SendError(ws, data);
+
+  }
+
+  SendError(ws, message) {
+    ws.send(JSON.stringify({ type: 'error', message }));
   }
 }
