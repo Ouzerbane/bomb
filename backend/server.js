@@ -1,3 +1,3 @@
-import GameServer from './handleneServer.js';
+import Game from './handleneServer.js';
 
-const server = new GameServer(8080);
+const server = new Game(8080);
